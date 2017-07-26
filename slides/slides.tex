@@ -72,13 +72,12 @@
 
 \title[Taming Relativity]{Taming hyperbolic equations with high-performance computing}
 \author[Frank Löffler \& Steven Brandt]{Frank Löffler and Steven R. Brandt}
-\institute{\large\zhs{计算和技术中心}\\
-                 \zhs{路易斯安那州立大学}}
+\institute{Center for Compuation and Technology\\
+ Louisiana State University}
 \titlegraphic{
  \includegraphics[height=2cm]{cactuslogo}\\
- \zhs{\LARGE 仙人掌工具包}
 }
-\date[2016-05-02]{2016 \zhs{二月} 17}
+\date[2017-07-31]{2017-07-31}
 
 \begin{document}
 
@@ -116,35 +115,76 @@
 }
 
 \frame{\frametitle{Cactus Programming Abstractions}
-    What programmers need to do...\\
-    \begin{itemize}
-    \item \textbf{Specify parameters} - Parameters along with default
-      values and other meta data can be analyzed at runtime
-      to discover errors or provide help. It's always easy
-      to find parameters and what they do.
-    \item \textbf{Write subroutines for logically rectangular regions
-        on the grid.}
-    \item \textbf{Define variables on the grid} - Grid functions are
-     distributed data structures. The runtime can loop through
-     all of them, and access their meta data.
-    \item \textbf{Insert subroutines into the schedule tree (workflow)} -
-        Insertion into the schedule tree is accomplished with
-        \textit{before} and \textit{after} clauses reminiscent
-        of aspect-oriented programming.
-    \end{itemize}
-    Infrastructure thorns can access grid functions, parameters,
-    and meta data at runtime and can perform actions without
-    intruding into the science code.
+  How many programs work...
+
+  \begin{itemize}
+  \item \textbf{Read in parameters} Scientifically, a trivial task. In
+    practice, a major amount of work that includes error checking,
+    discoverability, etc.
+  \item \textbf{Allocate a distributed data structure} Even for regular
+     meshes, even if it is chopped into relatively equal-sized pieces,
+     this step is necessary.
+  \item \textbf{Run initialization code} Populate the grid
+  \item \textbf{Evolve One Step}
+  Frequently, the next pieces are inextricable parts of the same block of code.
+  \begin{itemize}
+  \item \textbf{Apply a time evolution scheme} Runge Kutta, Adams-Bashforth, etc.
+  \item \textbf{Update boundary conditions and synchronize the grids}
+  \item \textbf{Save Data} Write data to files periodically, ideally this
+     should include checkpoint files.
+  \item \textbf{Repeat} if not done
+  \end{itemize}
+  \item \textbf{Cleanup} do analysis, write data, checkpoint
+  \end{itemize}
 }
+\frame{\frametitle{Cactus Programming Abstractions}
+  Advantages for Cactus and Collaborative Programming
+  \begin{itemize}
+  \item \textbf{Better Modularization} Grid synchronization, I/O (whether
+  HDF5, ASCII, checkpointing, etc.), time integration, are all independent.
+  \item \textbf{Simplified Scientific Programming} Programmers need only
+  write code for a logical grid.
+  \end{itemize}
+  Made possible by...
+  \begin{itemize}
+  \item \textbf{Distributed Data Structure} Cactus provides the distributed
+  data structure as well as discovery/introspection tools to enable you to
+  find out what variables other modules use.
+  \item \textbf{Common Schedule Tree} Though the basics are startup, evolve,
+  shutdown, coordination of subroutine calls within the tree is facilitated
+  by the Cactus scheduler and the ``before'' and ``after'' directives of schedule.ccl.
+  \end{itemize}
+}
+%\frame{\frametitle{Cactus Programming Abstractions}
+%    What programmers need to do...\\
+%    \begin{itemize}
+%    \item \textbf{Specify parameters} - Parameters along with default
+%      values and other meta data can be analyzed at runtime
+%      to discover errors or provide help. It's always easy
+%      to find parameters and what they do.
+%    \item \textbf{Write subroutines for logically rectangular regions
+%        on the grid.}
+%    \item \textbf{Define variables on the grid} - Grid functions are
+%     distributed data structures. The runtime can loop through
+%     all of them, and access their meta data.
+%    \item \textbf{Insert subroutines into the schedule tree (workflow)} -
+%        Insertion into the schedule tree is accomplished with
+%        \textit{before} and \textit{after} clauses reminiscent
+%        of aspect-oriented programming.
+%    \end{itemize}
+%    Infrastructure thorns can access grid functions, parameters,
+%    and meta data at runtime and can perform actions without
+%    intruding into the science code.
+%}
 \frame{\frametitle{Programming Abstractions, continued}
     What programmers don't need to do...\\
     \begin{itemize}
     \item \textbf{Write MPI code} - Synchronization and
      ghost zone exchanges handled mostly automatically.
-    \item \textbf{Write adaptive mesh refinement} (\zhs{自适应网格细化})
+    \item \textbf{Write adaptive mesh refinement} 
      Prolongation and restriction are handled mostly
      automatically also.
-    \item \textbf{Write a lot of ``boiler plate'' code} (\zhs{重复的编程任务})
+    \item \textbf{Write a lot of ``boiler plate'' code} 
         \begin{itemize}
         \item parameter parsing
         \item file I/O
@@ -159,10 +199,10 @@
 
 \section{Structure technical}
 
-\frame{\frametitle{Cactus Core: The Flesh (\zhs{仙人掌核心: 肉})}
+\frame{\frametitle{Cactus Core: The Flesh }
  \abspic{cactuslogo_structure_flesh}{0.1}{0.6}{0.4}
  \begin{itemize}
-  \item ANSI-C
+  \item ANSI-C and C++
   \item Independent of all other components
   \item Error handling
   \item Flexible build system
@@ -181,10 +221,10 @@
  \end{itemize}
 }
 
-\frame{\frametitle{Cactus Components: Thorns (\zhs{仙人掌组件: 刺})}
+\frame{\frametitle{Cactus Components: Thorns }
  \abspic{cactuslogo_structure_thorns}{0.15}{0.7}{0.4}
  \begin{itemize}
-  \item C, C++, Fortran 77, Fortran 90
+  \item C, C++, Fortran
   \item Encapsulating some functionality
   \item Rarely use MPI directly
   \item Communication/Configuration via defined APIs
@@ -282,15 +322,15 @@
 \frame{\frametitle{Convenience Tools}
  \begin{minipage}{0.3\textwidth}
   \centering
-  \includegraphics[height=0.6\textwidth]{cactuslogo}\\GetComponents\\\zhs{获得组件}\\
+  \includegraphics[height=0.6\textwidth]{cactuslogo}\\GetComponents\\
  \end{minipage}
  \begin{minipage}{0.3\textwidth}
   \centering
-  \includegraphics[height=0.6\textwidth]{factory}\\Simfactory\\\zhs{模拟工厂}\\
+  \includegraphics[height=0.6\textwidth]{factory}\\Simfactory\\
  \end{minipage}
  \begin{minipage}{0.3\textwidth}
   \centering
-  \includegraphics[height=0.6\textwidth]{camera}\\Formaline\\\zhs{福尔马林}\\
+  \includegraphics[height=0.6\textwidth]{camera}\\Formaline\\
  \end{minipage}
 }
 
@@ -338,19 +378,18 @@
 \frame{\frametitle{CaFunwave}
  \begin{itemize}
   \item Based on Fenyan Shi's Funwave TVD code
+  \item Based on Bousinesq equations
   \item With bug fixes
   \item Identical to round-off double precision
-  \item Supports various wavemakers
-  \item Supports data from an input file
- \end{itemize}
+\end{itemize}
 }
 
 \frame{\frametitle{CaFunwave}
  \begin{itemize}
   \item Paper with immersed boundary conditions
   \item Vegetation included, both integral and simple forms
-  \item Can use AMR with fixed time step and dispersion turned off 
-  \item Will use AMR with fixed time step and dispersion in the near future
+  \item Chakrabarti, Agnimitro, et al. \textit{``Boussinesq modeling of wave-induced hydrodynamics in coastal wetlands.''} \textbf{Journal of Geophysical Research: Oceans} (2017).
+  \item Oler, Adam, et al. \textit{``Implementation of an Infinite-Height Levee in CaFunwave Using an Immersed-Boundary Method.''} \textbf{Journal of Fluids Engineering} 138.11 (2016): 111103.
  \end{itemize}
 }
 
