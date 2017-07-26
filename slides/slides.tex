@@ -376,18 +376,23 @@
 }
 
 \frame{\frametitle{CaFunwave}
+ The CaFunwave Code:
  \begin{itemize}
   \item Based on Fenyan Shi's Funwave TVD code
   \item Based on Bousinesq equations
-  \item With bug fixes
-  \item Identical to round-off double precision
+  \item Vegetation included, both integral and simple forms
+  \begin{itemize}
+  \item 2d approximation of water waves valid for
+    long, weakly-nonlinear waves
+  \item See Mathematica
+    Notebook deriving them from the Euler Equations if
+    that is of interest.
+  \end{itemize}
 \end{itemize}
 }
 
 \frame{\frametitle{CaFunwave}
  \begin{itemize}
-  \item Paper with immersed boundary conditions
-  \item Vegetation included, both integral and simple forms
   \item Chakrabarti, Agnimitro, et al. \textit{``Boussinesq modeling of wave-induced hydrodynamics in coastal wetlands.''} \textbf{Journal of Geophysical Research: Oceans} (2017).
   \item Oler, Adam, et al. \textit{``Implementation of an Infinite-Height Levee in CaFunwave Using an Immersed-Boundary Method.''} \textbf{Journal of Fluids Engineering} 138.11 (2016): 111103.
  \end{itemize}
